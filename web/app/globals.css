@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background-color: #FAF8F3;
+  color: #1A1B19;
+  font-feature-settings: 'ss01';
+}
+
+/* Textura sutil de fundo: gradiente orgânico suave */
+.bg-atmosphere {
+  background-color: #FAF8F3;
+  background-image:
+    radial-gradient(at 12% 8%, rgba(60, 182, 140, 0.10) 0px, transparent 45%),
+    radial-gradient(at 88% 0%, rgba(224, 150, 43, 0.08) 0px, transparent 40%),
+    radial-gradient(at 75% 95%, rgba(29, 158, 117, 0.06) 0px, transparent 50%);
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-rise { animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Atrasos escalonados para reveal em sequência */
+.delay-1 { animation-delay: 0.06s; }
+.delay-2 { animation-delay: 0.12s; }
+.delay-3 { animation-delay: 0.18s; }
+.delay-4 { animation-delay: 0.24s; }
+.delay-5 { animation-delay: 0.30s; }
+
+* { -webkit-tap-highlight-color: transparent; }
