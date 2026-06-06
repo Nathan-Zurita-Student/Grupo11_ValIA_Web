@@ -57,4 +57,33 @@ router.patch(
   ctrl.resolve
 );
 
+router.patch(
+  '/:id',
+  [
+    param('id').isUUID().withMessage('ID inválido'),
+    body('name').optional().trim().notEmpty().withMessage('Nome não pode ser vazio'),
+    body('expiryDate')
+      .optional()
+      .isISO8601()
+      .withMessage('Data de validade inválida (use AAAA-MM-DD)')
+      .custom((value) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (new Date(value) < today) throw new Error('A data de validade não pode estar no passado');
+        return true;
+      }),
+    body('quantity').optional().isInt({ min: 1 }).withMessage('Quantidade deve ser um inteiro ≥ 1'),
+    body('category').optional().isIn(CATEGORIES).withMessage(`Categoria inválida`),
+  ],
+  handleValidation,
+  ctrl.update
+);
+
+router.delete(
+  '/:id',
+  [param('id').isUUID().withMessage('ID inválido')],
+  handleValidation,
+  ctrl.remove
+);
+
 module.exports = router;

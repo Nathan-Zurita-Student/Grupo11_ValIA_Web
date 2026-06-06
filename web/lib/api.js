@@ -23,12 +23,18 @@ export const authService = {
 };
 
 export const productService = {
-  list: (pantryId, category) =>
-    api
-      .get(`/pantries/${pantryId}/products`, { params: category ? { category } : {} })
-      .then((r) => r.data),
+  list: (pantryId, { category, search } = {}) => {
+    const params = {};
+    if (category) params.category = category;
+    if (search) params.search = search;
+    return api.get(`/pantries/${pantryId}/products`, { params }).then((r) => r.data);
+  },
   create: (pantryId, product) =>
     api.post(`/pantries/${pantryId}/products`, product).then((r) => r.data),
+  update: (pantryId, productId, data) =>
+    api.patch(`/pantries/${pantryId}/products/${productId}`, data).then((r) => r.data),
+  remove: (pantryId, productId) =>
+    api.delete(`/pantries/${pantryId}/products/${productId}`).then((r) => r.data),
   resolve: (pantryId, productId, action) =>
     api.patch(`/pantries/${pantryId}/products/${productId}/resolve`, { action }).then((r) => r.data),
   report: (pantryId) => api.get(`/pantries/${pantryId}/report`).then((r) => r.data),

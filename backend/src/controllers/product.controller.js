@@ -36,6 +36,9 @@ async function list(req, res, next) {
   try {
     const where = { pantryId: req.params.pantryId, status: 'active' };
     if (req.query.category) where.category = req.query.category;
+    if (req.query.search) {
+      where.name = { [Op.iLike]: `%${req.query.search}%` };
+    }
 
     const products = await Product.findAll({
       where,
@@ -92,6 +95,42 @@ async function resolve(req, res, next) {
   }
 }
 
+// PATCH /api/pantries/:pantryId/products/:id  { name?, expiryDate?, quantity?, category? }
+async function update(req, res, next) {
+  try {
+    const product = await Product.findOne({
+      where: { id: req.params.id, pantryId: req.params.pantryId },
+    });
+    if (!product) return res.status(404).json({ error: 'Produto não encontrado' });
+
+    const { name, expiryDate, quantity, category } = req.body;
+    if (name !== undefined) product.name = name;
+    if (expiryDate !== undefined) product.expiryDate = expiryDate;
+    if (quantity !== undefined) product.quantity = quantity;
+    if (category !== undefined) product.category = category;
+    await product.save();
+
+    return res.json({ ...product.toJSON(), urgency: urgencyOf(product.expiryDate) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// DELETE /api/pantries/:pantryId/products/:id
+async function remove(req, res, next) {
+  try {
+    const product = await Product.findOne({
+      where: { id: req.params.id, pantryId: req.params.pantryId },
+    });
+    if (!product) return res.status(404).json({ error: 'Produto não encontrado' });
+
+    await product.destroy();
+    return res.json({ message: 'Produto removido' });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // GET /api/pantries/:pantryId/report
 // Relatório de desperdício: percentual de consumidos vs descartados.
 async function report(req, res, next) {
@@ -116,4 +155,4 @@ async function report(req, res, next) {
   }
 }
 
-module.exports = { create, list, expiring, resolve, report, urgencyOf };
+module.exports = { create, list, expiring, resolve, update, remove, report, urgencyOf };

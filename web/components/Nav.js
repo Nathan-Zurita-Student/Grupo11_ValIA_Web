@@ -5,6 +5,12 @@ import { usePathname, useRouter } from 'next/navigation';
 import { LayoutGrid, PlusCircle, BarChart3, LogOut, Leaf } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 
+function initials(name) {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 const LINKS = [
   { href: '/dashboard', label: 'Despensa', icon: LayoutGrid },
   { href: '/dashboard/add', label: 'Adicionar', icon: PlusCircle },
@@ -47,6 +53,14 @@ export default function Nav() {
               </Link>
             );
           })}
+          {user?.name && (
+            <span
+              title={user.name}
+              className="ml-1 flex h-8 w-8 items-center justify-center rounded-xl bg-brand-100 text-xs font-semibold text-brand-700 select-none"
+            >
+              {initials(user.name)}
+            </span>
+          )}
           <button
             onClick={handleLogout}
             title="Sair"
